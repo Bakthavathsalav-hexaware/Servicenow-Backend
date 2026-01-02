@@ -141,11 +141,15 @@ private async getGroupWorkload() {
     'active=true^assignment_groupISNOTEMPTY',
   )
  
+  if (!Array.isArray(incidents)) {
+    return { metric: 'M5', data: [] }
+  }
+ 
   const groupMap: Record<string, number> = {}
  
   incidents.forEach((inc: any) => {
-    const group =
-      inc.assignment_group?.display_value || 'Unknown'
+    const group = inc.assignment_group?.display_value
+    if (!group) return
     groupMap[group] = (groupMap[group] || 0) + 1
   })
  
@@ -154,10 +158,7 @@ private async getGroupWorkload() {
     value: groupMap[key],
   }))
  
-  return {
-    metric: 'M5',
-    data,
-  }
+  return { metric: 'M5', data }
 }
 
 // M7: SLA Breach Status
@@ -180,11 +181,11 @@ private async getSlaBreachStatus() {
 // M9: State Funnel
 
 private async getStateFunnel() {
-  const incidents = await this.serviceNowService.fetchTable(
-    'incident',
-    'active=true',
-  )
- 
+  const incidents =
+    (await this.serviceNowService.fetchTable(
+      'incident',
+      'active=true'
+    )) || []   
   const stateMap: Record<string, number> = {}
  
   incidents.forEach((inc: any) => {

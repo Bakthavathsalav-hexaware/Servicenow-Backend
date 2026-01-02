@@ -24,7 +24,8 @@ export class ServiceNowService {
       },
       params: {
         sysparm_query: query,
-        sysparm_limit: 1000,
+        sysparm_limit: 10000,
+        sysparm_display_value:true,
       },
     })
  
